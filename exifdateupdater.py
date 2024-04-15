@@ -1,7 +1,8 @@
 import argparse
 from os import walk
-from PIL import Image, ExifTags
+from PIL import Image
 import re
+import pyexiv2
 
 def main(path, date, guess):
      images = identify_images(path)
@@ -11,7 +12,15 @@ def main(path, date, guess):
             date = det_date if det_date is not None else date
         
         set_date(image, date)
-        
+
+
+
+def set_date(file, date):
+    with pyexiv2.Image(file) as img:
+        new_exif = {'Exif.Image.DateTime'}
+        img.save
+
+
 
 def determine_date(file):
     year_regex = "\D(19[7,8,9]\d|20[0,1,2]\d)\D"
@@ -31,10 +40,6 @@ def determine_date(file):
         except:
             print("Invalid selection :(")
             return None
-
-
-def set_date(file, date):
-    None
 
 def identify_images(path):
     images_missing_data = []
@@ -66,9 +71,9 @@ if __name__ == "__main__":
 
     parser.add_argument('path')
     parser.add_argument('-d', '--date')
+    parser.add_argument('-b', '--backup')
     parser.add_argument('-g', '--guess', action='store_true')
 
     args = parser.parse_args()
-    print(args.path, args.date, args.guess)
 
-    main(args.path)
+    main(args.path, args.date, args.guess, args.backup)
